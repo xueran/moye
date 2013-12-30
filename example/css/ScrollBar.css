@@ -1,0 +1,55 @@
+.ecl-ui-scrollbar-noselect {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+.ecl-ui-scrollbar {
+  width: 500px;
+  border: 2px solid #DDD;
+}
+.ecl-ui-scrollbar-panel {
+  margin-right: 10px;
+  height: 300px;
+  overflow: hidden;
+}
+.ecl-ui-scrollbar-track {
+  float: right;
+  width: 10px;
+  height: 300px;
+  position: relative;
+  background: #EEE;
+}
+.ecl-ui-scrollbar-thumb {
+  *font-size: 0;
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 30px;
+  background: #333;
+  cursor: default;
+}
+.ecl-ui-scrollbar-noscroll .ecl-ui-scrollbar-track {
+  display: none;
+}
+.ecl-ui-scrollbar-noscroll .ecl-ui-scrollbar-panel {
+  margin-right: 0;
+}
+.ecl-ui-scrollbar-disable .ecl-ui-scrollbar-thumb {
+  background: #EEE;
+}
+.ecl-ui-scrollbar-horizontal .ecl-ui-scrollbar-panel {
+  width: 500px;
+  margin-right: 0;
+}
+.ecl-ui-scrollbar-horizontal .ecl-ui-scrollbar-track {
+  float: none;
+  width: 500px;
+  height: 10px;
+}
+.ecl-ui-scrollbar-horizontal .ecl-ui-scrollbar-thumb {
+  left: 0;
+  width: 30px;
+  height: 10px;
+}
