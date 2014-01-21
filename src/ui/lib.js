@@ -500,7 +500,7 @@ define(function () {
      *             
      * @return {string} 解析结果字符串，其中值将被URI编码
      */
-    lib.toQueryString = lib.object = function toQueryString(object, base){
+    var toQueryString = function (object, base){
         var queryString = [];
 
         forIn(object, function (value, key) {
@@ -531,6 +531,7 @@ define(function () {
 
         return queryString.join('&');
     };
+    lib.toQueryString = lib.object.toQueryString = toQueryString;
 
     /* ========================== lib.string ========================== */
    
@@ -944,6 +945,27 @@ define(function () {
             }
 
             return this;
+        },
+
+        /**
+         * 添加单次事件绑定
+         * 
+         * @public
+         * @param {string=} type 事件类型
+         * @param {Function} listener 要添加绑定的监听器
+         */
+        once: function (type, listener) {
+            if (lib.isFunction(type)) {
+                listener = type;
+                type = '*';
+            }
+
+            var me = this;
+            var realListener = function () {
+                listener.apply(me, arguments);
+                me.un(type, realListener);
+            };
+            this.on.call(me, type, realListener);
         },
 
         /**

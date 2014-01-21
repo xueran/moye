@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: array</title>
+    <title>JSDoc: Module: Cookie</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Namespace: array</h1>
+    <h1 class="page-title">Module: Cookie</h1>
     
     
 
@@ -27,9 +27,7 @@
     
 <header>
     <h2>
-        <span class="ancestors"><a href="module-lib.html">lib</a>.</span>
-    
-    array
+    Cookie
     </h2>
     
 </header>  
@@ -40,6 +38,8 @@
     
     
         
+            <div class="description">Cookie 模块</div>
+        
         
         
 <dl class="details">
@@ -64,7 +64,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib.js.html">lib.js</a>, <a href="lib.js.html#line92">line 92</a>
+        <a href="Cookie.js.html">Cookie.js</a>, <a href="Cookie.js.html#line42">line 42</a>
     </li></ul></dd>
     
     
@@ -77,6 +77,22 @@
 
         
         
+            <h3>Example</h3>
+            
+    <pre class="prettyprint"><code>var cookie = new Cookie('foo', {
+    duration: 1, // 1 天
+    domain: 'foo.com',
+     path: '/'
+ });
+cookie.set('bar');
+cookie.get(); // 'bar'
+
+或者使用静态方法：
+
+Cookie.set('foo', 'bar');
+Cookie.get('foo');   // 'bar'</code></pre>
+
+        
     
     </div>
     
@@ -85,11 +101,205 @@
     
     
     
+        <h3 class="subsection-title">Requires</h3>
+        
+        <ul>
+            <li><a href="module-lib.html">module:lib</a></li>
+        </ul>
     
     
     
     
     
+    
+    
+        <h3 class="subsection-title">Members</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="options"><span class="type-signature">&lt;private> </span>options<span class="type-signature"> :Object</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        控件配置项
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Object</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+        <h5 class="subsection-title">Properties:</h5>
+        
+        <dl>
+
+<table class="props">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Cookie 的存储路径</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>domain</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Cookie 的存取域</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>duration</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Cookie 的有效天数</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>secure</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">是否安全连接 (https)</td>
+        </tr>
+	
+	
+	</tbody>
+</table></dl>
+        
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Cookie.js.html">Cookie.js</a>, <a href="Cookie.js.html#line45">line 45</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        </dl>
     
     
     
@@ -98,7 +308,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="each"><span class="type-signature">&lt;static> </span>each<span class="signature">(obj, iterator, <span class="optional">bind</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="get"><span class="type-signature">&lt;static> </span>get<span class="signature">(key)</span><span class="type-signature"> &rarr; {string}</span></h4>
     
     
 </dt>
@@ -106,9 +316,493 @@
     
     
     <div class="description">
-        遍历数组方法
+        读取指定键名的 Cookie 值
+    </div>
+    
 
-现代浏览器中数组 forEach 方法静态化别名
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">指定新的键名</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Cookie.js.html">Cookie.js</a>, <a href="Cookie.js.html#line155">line 155</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="module-Cookie.html#get">module:Cookie#get</a></li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Cookie 中键名为 `key` 的值，无值返回空字符
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">string</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="remove"><span class="type-signature">&lt;static> </span>remove<span class="signature">(key)</span><span class="type-signature"> &rarr; {<a href="module-Cookie.html">module:Cookie</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        移除指定键名的 Cookie
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">要移除的 Cookie 键名</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Cookie.js.html">Cookie.js</a>, <a href="Cookie.js.html#line182">line 182</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="module-Cookie.html#remove">module:Cookie#remove</a></li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    当前 Cookie 实例
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="module-Cookie.html">module:Cookie</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="set"><span class="type-signature">&lt;static> </span>set<span class="signature">(key, value, options)</span><span class="type-signature"> &rarr; {<a href="module-Cookie.html">module:Cookie</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        设置指定键的 Cookie 值
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">指定的 Cookie 键名</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">要设置的 Cookie 值</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Cookie 配置项</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Cookie.js.html">Cookie.js</a>, <a href="Cookie.js.html#line170">line 170</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="module-Cookie.html#set">module:Cookie#set</a></li>
+        
+            <li><a href="module-Cookie.html#options">module:Cookie#options</a></li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    当前 Cookie 实例
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="module-Cookie.html">module:Cookie</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(key)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        读取指定键名的 Cookie 值
     </div>
     
 
@@ -144,13 +838,13 @@
 	
         <tr>
             
-                <td class="name"><code>obj</code></td>
+                <td class="name"><code>key</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">Array</span>
+<span class="param-type">string</span>
 
 
             
@@ -161,36 +855,7 @@
                 
                     
                 
-                    
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">待遍历的数组或类数组</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>iterator</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    
+                    &lt;nullable><br>
                 
                     
                 
@@ -199,40 +864,7 @@
             
             
             
-            <td class="description last">迭代方法</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>bind</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-                    
-                
-                    
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">迭代方法中绑定的 this</td>
+            <td class="description last">指定新的键名</td>
         </tr>
 	
 	
@@ -263,170 +895,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib.js.html">lib.js</a>, <a href="lib.js.html#line149">line 149</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="indexOf"><span class="type-signature">&lt;static> </span>indexOf<span class="signature">(source, item, from)</span><span class="type-signature"> &rarr; {number}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        查询数组中指定元素的索引位置
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>source</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">需要查询的数组</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>item</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">查询项</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>from</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">初始的查询位置</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib.js.html">lib.js</a>, <a href="lib.js.html#line194">line 194</a>
+        <a href="Cookie.js.html">Cookie.js</a>, <a href="Cookie.js.html#line89">line 89</a>
     </li></ul></dd>
     
     
@@ -451,7 +920,7 @@
     
             
 <div class="param-desc">
-    指定元素的索引位置，查询不到时返回-1
+    Cookie 中键名为 `key` 的值，无值返回空字符
 </div>
 
 
@@ -462,7 +931,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
 	</dd>
@@ -476,7 +945,7 @@
         
             
 <dt>
-    <h4 class="name" id="map"><span class="type-signature">&lt;static> </span>map<span class="signature">(obj, iterator, <span class="optional">bind</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    <h4 class="name" id="initialize"><span class="type-signature">&lt;private> </span>initialize<span class="signature">(key, <span class="optional">options</span>)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -484,9 +953,7 @@
     
     
     <div class="description">
-        数组的 map 方法
-
-现代浏览器中数组 map 方法静态化
+        初始化
     </div>
     
 
@@ -522,13 +989,13 @@
 	
         <tr>
             
-                <td class="name"><code>obj</code></td>
+                <td class="name"><code>key</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">Array</span>
+<span class="param-type">string</span>
 
 
             
@@ -546,45 +1013,14 @@
             
             
             
-            <td class="description last">待处理的数组或类数组</td>
+            <td class="description last">Cookie 键名</td>
         </tr>
 	
 	
 	
         <tr>
             
-                <td class="name"><code>iterator</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    
-                
-                    
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">迭代方法</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>bind</code></td>
+                <td class="name"><code>options</code></td>
             
             
             <td class="type">
@@ -603,6 +1039,8 @@
                 
                     
                 
+                    &lt;nullable><br>
+                
                     
                 
                 </td>
@@ -610,7 +1048,7 @@
             
             
             
-            <td class="description last">迭代方法中绑定的 this</td>
+            <td class="description last">配置项 @see Cookie#options</td>
         </tr>
 	
 	
@@ -641,7 +1079,136 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib.js.html">lib.js</a>, <a href="lib.js.html#line161">line 161</a>
+        <a href="Cookie.js.html">Cookie.js</a>, <a href="Cookie.js.html#line70">line 70</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">(key)</span><span class="type-signature"> &rarr; {<a href="module-Cookie.html">module:Cookie</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        移除指定键名的 Cookie
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    &lt;nullable><br>
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">要移除的 Cookie 键名</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Cookie.js.html">Cookie.js</a>, <a href="Cookie.js.html#line132">line 132</a>
     </li></ul></dd>
     
     
@@ -666,7 +1233,7 @@
     
             
 <div class="param-desc">
-    map 处理后的原数组
+    当前 Cookie 实例
 </div>
 
 
@@ -677,7 +1244,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type">Array</span>
+<span class="param-type"><a href="module-Cookie.html">module:Cookie</a></span>
 
 
 	</dd>
@@ -691,7 +1258,7 @@
         
             
 <dt>
-    <h4 class="name" id="slice"><span class="type-signature">&lt;static> </span>slice<span class="signature">(array, startIndex, endIndex)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    <h4 class="name" id="set"><span class="type-signature"></span>set<span class="signature">(key, value)</span><span class="type-signature"> &rarr; {<a href="module-Cookie.html">module:Cookie</a>}</span></h4>
     
     
 </dt>
@@ -699,7 +1266,7 @@
     
     
     <div class="description">
-        数组切片方法
+        设置指定键的 Cookie 值
     </div>
     
 
@@ -721,6 +1288,8 @@
 		<th>Type</th>
 		
 		
+		<th>Argument</th>
+		
 		
 		
 		
@@ -733,69 +1302,64 @@
 	
         <tr>
             
-                <td class="name"><code>array</code></td>
+                <td class="name"><code>key</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">Array</span>
+<span class="param-type">string</span>
 
 
             
             </td>
             
             
+                <td class="attributes">
+                
+                    
+                
+                    &lt;nullable><br>
+                
+                    
+                
+                </td>
             
             
             
-            <td class="description last">输入数组或类数组</td>
+            
+            <td class="description last">指定的 Cookie 键名</td>
         </tr>
 	
 	
 	
         <tr>
             
-                <td class="name"><code>startIndex</code></td>
+                <td class="name"><code>value</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
             
             </td>
             
             
-            
-            
-            
-            <td class="description last">切片的开始索引</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>endIndex</code></td>
-            
-            
-            <td class="type">
-            
+                <td class="attributes">
                 
-<span class="param-type">number</span>
-
-
-            
-            </td>
-            
-            
+                    
+                
+                    
+                
+                </td>
             
             
             
-            <td class="description last">切片的结束索引</td>
+            
+            <td class="description last">要设置的 Cookie 值</td>
         </tr>
 	
 	
@@ -826,7 +1390,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib.js.html">lib.js</a>, <a href="lib.js.html#line226">line 226</a>
+        <a href="Cookie.js.html">Cookie.js</a>, <a href="Cookie.js.html#line104">line 104</a>
     </li></ul></dd>
     
     
@@ -851,7 +1415,7 @@
     
             
 <div class="param-desc">
-    新的数组
+    当前 Cookie 实例
 </div>
 
 
@@ -862,142 +1426,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type">Array</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="toArray"><span class="type-signature">&lt;static> </span>toArray<span class="signature">(source)</span><span class="type-signature"> &rarr; {Array}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        将对象转换为数组
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>source</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">任意对象</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib.js.html">lib.js</a>, <a href="lib.js.html#line248">line 248</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Array</span>
+<span class="param-type"><a href="module-Cookie.html">module:Cookie</a></span>
 
 
 	</dd>
@@ -1030,7 +1459,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Jan 21 2014 19:33:10 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Jan 21 2014 19:33:09 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>

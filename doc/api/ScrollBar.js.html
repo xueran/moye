@@ -26,8 +26,8 @@
     <section>
         <article>
             <pre class="prettyprint source"><code>/**
- * Moye (Zhixin UI)
- * Copyright 2014 Baidu Inc. All rights reserved.
+ * ZXUI (Zhixin UI)
+ * Copyright 2013 Baidu Inc. All rights reserved.
  * 
  * @file 滚动条组件
  * @author  mengke01(mengke01@baidu.com)
@@ -109,13 +109,25 @@ define(function (require) {
          * @name module:ScrollBar#options
          * @type {Object}
          * @property {boolean} options.disabled 是否禁用组件
-         * @property {(string | HTMLElement)} options.main 需要滚动的元素
+         * @property {(string | HTMLElement)} options.main 主元素
+         * @property {(string | HTMLElement)} options.panel 需要滚动的元素，
+         *      如果不设则按class规则查找`options.prefix` + `panel`
          * @property {(string | HTMLElement)} options.thumb 滚动条按钮元素
-         * 
+         *      如果不设则按class规则查找`options.prefix` + `thumb` ，
+         *      并且将thumb父级元素作为track
          * @property {Number} options.wheelspeed 滚动速度，百分比，越大滚动越快
          * @property {string} options.direction 滚动方向
          * @property {string} options.prefix class默认前缀
-         * 
+         * @property {string} options.mode 使用的模式(`scroll` or `position`)，
+         *      scrollTop模式or style.top模式
+         *      使用的css是不一样的,默认scrollTop模式
+         * @property {boolean} options.preventWheelScroll 
+         *      如果true会始终阻止滚轮滚动页面，及时当前面板已经滚动到头
+         *      此处会防止因面板较短导致的页面频繁滚动
+         * @property {boolean} options.autoThumbSize 
+         *      是否自动调整thumb的高度，以适应滚动内容的大小
+         * @property {boolean} options.minThumbSize 
+         *      自动调整thumb高度时，最小的thumb高度(px)
          * @private
          */
         options: {
@@ -125,6 +137,9 @@ define(function (require) {
 
             //组件控制的主元素
             main: '',
+
+            //需要滚动的元素
+            panel: '',
 
             //组件控制的滑动按钮
             thumb: '',
@@ -136,7 +151,19 @@ define(function (require) {
             direction: 'vertical',
 
             // 控件class前缀，同时将作为main的class之一
-            prefix: 'ecl-ui-scrollbar'
+            prefix: 'ecl-ui-scrollbar',
+
+            //使用的模式，scrollTop模式or style.top模式，使用的css是不一样的
+            mode: '',
+
+            //如果true会始终阻止滚轮滚动页面，即使当前已经滚动到头
+            preventWheelScroll: false,
+
+            //是否自动调整thumb的高度
+            autoThumbSize: true,
+
+            //最小的thumb高度,px
+            minThumbSize: 30
         },
 
         /**
@@ -244,8 +271,16 @@ define(function (require) {
                 percent = 2*this.scrollRatio;
             }
 
-            this.setScrollPercent(this.curPos - percent);
-            lib.preventDefault(e);
+            var percent = this.curPos - percent;
+            this.setScrollPercent(percent);
+            //在滚动范围内取消默认行为
+            if(
+                this.options.preventWheelScroll 
+                || (percent >= 0.005 && percent &lt;= 0.995) 
+            ){
+                lib.preventDefault(e);
+            }
+            
         },
 
         /**
@@ -265,11 +300,17 @@ define(function (require) {
                 pos = 1;
             }
 
-            this.thumb.style[this.xAxis ? 'left' : 'top'] = 
-                (pos * this.trackSize) + 'px';
+            var axis = this.xAxis ? 'left' : 'top';
+            this.thumb.style[axis] = 
+                Math.round(pos * this.trackSize) + 'px';
 
-            this.main.parentNode[this.scrollDirection] = 
-                pos * this.mainSize * (1-this.scrollRatio);
+            var top = Math.round(pos * this.panelSize * (1-this.scrollRatio));
+            if(this.posMode) {
+                this.panel.style[axis] =  (-top) + 'px';
+            }
+            else {
+                this.panel[this.scrollDirection] = top;
+            }
 
             this.curPos = pos;
             var event = {
@@ -292,37 +333,69 @@ define(function (require) {
          * @private
          */
         init: function () {
-            if(!this.options.main || !this.options.thumb) {
-                throw new Error('invalid main or thumb');
+            if(!this.options.main) {
+                throw new Error('invalid main');
             }
 
-            this.disabled = !!this.options.disabled;
+            var opt = this.options;
+            this.disabled = !!opt.disabled;
             this.curPos = 0;
 
             //当前滚动坐标
-            this.xAxis = this.options.direction === 'horizontal';
+            this.xAxis = opt.direction === 'horizontal';
 
             var sizeProp = this.xAxis ? 'Width' : 'Height';
             this.offsetProp = 'offset' + sizeProp;
             this.clientProp = 'client' + sizeProp;
             this.scrollProp = 'scroll' + sizeProp;
             this.scrollDirection = 'scroll' + (this.xAxis ? 'Left' : 'Top');
-
+            this.posMode = opt.mode === 'position';
+            
             //滚动主元素
-            this.main = lib.g(this.options.main);
+            this.main = lib.g(opt.main);
+
+            //需要滚动的元素
+            if(!opt.panel) {
+                this.panel = lib.q( this.getClass('panel'), this.main)[0];
+            }
+            else {
+                this.panel = lib.g(opt.panel);
+            }
+
             //滚动条按钮
-            this.thumb = lib.g(this.options.thumb);
+            if(!opt.thumb) {
+                this.thumb = lib.q( this.getClass('thumb'), this.main)[0];
+            }
+            else {
+                this.thumb = lib.g(opt.thumb);
+            }
+
             //滚动条
             this.track = this.thumb.offsetParent;
             
             lib.on(this.thumb, 'mousedown', this.onThumbdown);
             lib.on(this.track, 'mouseup', this.onTrackUp);
             lib.on(
-                this.main, 
+                this.panel, 
                 wheelEvent, 
                 this.onMouseWheel
             );
+
+            var me = this;
+            lib.on(me.main, 'mouseenter', 
+                me.onMainEnter = function() {
+                    lib.addClass(me.main, me.getClass('over') );
+                }
+            );
+
+            lib.on(me.main, 'mouseleave', 
+                me.onMainLeave = function() {
+                    lib.removeClass(me.main, me.getClass('over') );
+                }
+            );
+
         },
+
 
 
         /**
@@ -353,7 +426,7 @@ define(function (require) {
             }
             //滚动距离
             else if(pos > 1) {
-                pos = pos / ( this.mainSize *(1 - this.scrollRatio) );
+                pos = pos / ( this.panelSize *(1 - this.scrollRatio) );
             }
             //滚动百分比
             else {
@@ -369,29 +442,40 @@ define(function (require) {
          */
         refresh: function() {
 
-            this.mainSize = this.main[this.scrollProp];
-            this.trackSize = this.track[this.clientProp] 
-                - this.thumb[this.offsetProp];
+            this.panelSize = this.panel[this.scrollProp];
 
             //当前内容的缩放级别
             this.scrollRatio = 
-                this.main.parentNode[this.clientProp]/
-                this.mainSize;
+                this.main[this.clientProp]/
+                this.panelSize;
 
             //设置祖先元素为禁用
-            var container = lib.getAncestorByClass(
-                this.main, this.getClass('')
-            );
-            if(container) {
-                lib[this.scrollRatio >=1 
-                    ? 'addClass' : 'removeClass']
-                    (
-                        container, 
-                        this.getClass('noscroll')
-                    );
+            lib[this.scrollRatio >=1 
+                ? 'addClass' : 'removeClass']
+                (
+                    this.main, 
+                    this.getClass('noscroll')
+                );
+
+            //滑块轨道的大小
+            var trackLen = this.track[this.clientProp];
+
+            if(this.options.autoThumbSize && this.scrollRatio &lt; 1) {
+
+                var thumbSize = Math.max(
+                    this.options.minThumbSize, 
+                    this.scrollRatio * trackLen
+                );
+
+                this.thumb.style[this.xAxis ? 'width' : 'height']
+                    = thumbSize + 'px';
             }
-            
+
+            this.trackSize = trackLen - this.thumb[this.offsetProp];
+
             this.scrollTo(this.curPos);
+            this.disabled = this.scrollRatio >= 1;
+            
             return this;
         },
 
@@ -402,8 +486,8 @@ define(function (require) {
          * @public
          */
         render: function () {
-            if(!this.options.main || !this.options.thumb) {
-                throw new Error('invalid main or thumb');
+            if(!this.options.main) {
+                throw new Error('invalid main');
             }
 
             this.refresh();
@@ -419,16 +503,10 @@ define(function (require) {
         setEnabled: function(enabled) {
             var disabled = !enabled;
             //设置祖先元素为禁用
-            var container = lib.getAncestorByClass(
+            lib[ disabled ? 'addClass' : 'removeClass'](
                 this.main, 
-                this.getClass('')
+                this.getClass('disable')
             );
-            if(container) {
-                lib[ disabled ? 'addClass' : 'removeClass'](
-                    container, 
-                    this.getClass('disable')
-                );
-            }
             this.disabled = disabled;
         },
 
@@ -457,11 +535,14 @@ define(function (require) {
             lib.removeClass(document.body, this.getClass('noselect'));
             lib.un(this.thumb, 'mousedown', this.onThumbdown);
             lib.un(this.track, 'mouseup', this.onTrackUp);
-            lib.un(this.main, wheelEvent, this.onMouseWheel);
+            lib.un(this.panel, wheelEvent, this.onMouseWheel);
             lib.un(document, 'mousemove', this.onMousemove);
             lib.un(document, 'mouseup', this.onMouseup);
 
-            this.main = this.thumb = this.track = null;
+            lib.un(this.main, 'mouseenter', this.onMainEnter);
+            lib.un(this.main, 'mouseleave', this.onMainLeave);
+
+            this.main = this.panel = this.thumb = this.track = null;
 
             this.parent('dispose');
         }
@@ -478,15 +559,16 @@ define(function (require) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-Calendar.html">Calendar</a></li><li><a href="module-CalendarExtension.html">CalendarExtension</a></li><li><a href="module-City.html">City</a></li><li><a href="module-Control.html">Control</a></li><li><a href="module-Dialog.html">Dialog</a></li><li><a href="module-DialogFactory.html">DialogFactory</a></li><li><a href="module-Filter.html">Filter</a></li><li><a href="module-FloatTip.html">FloatTip</a></li><li><a href="module-Lazy.html">Lazy</a></li><li><a href="module-LazyImg.html">LazyImg</a></li><li><a href="module-lib.html">lib</a></li><li><a href="module-log.html">log</a></li><li><a href="module-Lunar.html">Lunar</a></li><li><a href="module-Pager.html">Pager</a></li><li><a href="module-PicUploader.html">PicUploader</a></li><li><a href="module-Popup.html">Popup</a></li><li><a href="module-Rating.html">Rating</a></li><li><a href="module-ScrollBar.html">ScrollBar</a></li><li><a href="module-Select.html">Select</a></li><li><a href="module-Slider.html">Slider</a></li><li><a href="SliderAnim.html">SliderAnim</a></li><li><a href="module-Tabs.html">Tabs</a></li><li><a href="module-Tip.html">Tip</a></li><li><a href="TimeLine.html">TimeLine</a></li></ul><h3>Classes</h3><ul><li><a href="initialize.html">initialize</a></li><li><a href="module-Dialog-Mask.html">Mask</a></li></ul><h3>Events</h3><ul><li><a href="CalendarExtension-Menu.html#event:beforeShow">beforeShow</a></li><li><a href="CalendarExtension-Menu.html#event:click">click</a></li><li><a href="CalendarExtension-Menu.html#event:pick">pick</a></li><li><a href="module-Calendar.html#event:beforeShow">beforeShow</a></li><li><a href="module-Calendar.html#event:hide">hide</a></li><li><a href="module-Calendar.html#event:pick">pick</a></li><li><a href="module-Calendar.html#event:show">show</a></li><li><a href="module-City.html#event:beforeShow">beforeShow</a></li><li><a href="module-City.html#event:click">click</a></li><li><a href="module-City.html#event:hide">hide</a></li><li><a href="module-City.html#event:pick">pick</a></li><li><a href="module-City.html#event:show">show</a></li><li><a href="module-Control.html#event:disable">disable</a></li><li><a href="module-Control.html#event:dispose">dispose</a></li><li><a href="module-Control.html#event:enable">enable</a></li><li><a href="module-Dialog.html#event:beforedispose">beforedispose</a></li><li><a href="module-Dialog.html#event:beforehide">beforehide</a></li><li><a href="module-Dialog.html#event:beforeshow">beforeshow</a></li><li><a href="module-Dialog.html#event:cancel">cancel</a></li><li><a href="module-Dialog.html#event:confirm">confirm</a></li><li><a href="module-Dialog.html#event:dispose">dispose</a></li><li><a href="module-Dialog.html#event:hide">hide</a></li><li><a href="module-Dialog.html#event:show">show</a></li><li><a href="module-Filter.html#event:change">change</a></li><li><a href="module-Filter.html#event:click">click</a></li><li><a href="module-log.html#event:click">click</a></li><li><a href="module-log.html#event:send">send</a></li><li><a href="module-log.html#event:start">start</a></li><li><a href="module-Lunar.html#event:click">click</a></li><li><a href="module-Lunar.html#event:navigate">navigate</a></li><li><a href="module-Lunar.html#event:pick">pick</a></li><li><a href="module-Pager.html#event:change">change</a></li><li><a href="module-Pager.html#event:click">click</a></li><li><a href="module-PicUploader.html#event:error">error</a></li><li><a href="global.html#event:module:PicUploader:remove">module:PicUploader:remove</a></li><li><a href="module-Popup.html#event:beforeShow">beforeShow</a></li><li><a href="module-Popup.html#event:click">click</a></li><li><a href="module-Popup.html#event:hide">hide</a></li><li><a href="module-Popup.html#event:show">show</a></li><li><a href="module-Rating.html#event:rated">rated</a></li><li><a href="module-ScrollBar.html#event:change">change</a></li><li><a href="module-Select.html#event:beforeShow">beforeShow</a></li><li><a href="module-Select.html#event:change">change</a></li><li><a href="module-Select.html#event:hide">hide</a></li><li><a href="module-Select.html#event:pick">pick</a></li><li><a href="module-Select.html#event:show">show</a></li><li><a href="module-Slider.html#event:change">change</a></li><li><a href="module-Tabs.html#event:change">change</a></li><li><a href="module-Tip.html#event:beforeShow">beforeShow</a></li><li><a href="module-Tip.html#event:click">click</a></li><li><a href="module-Tip.html#event:hide">hide</a></li><li><a href="module-Tip.html#event:show">show</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-lib.array.html">array</a></li><li><a href="module-lib.browser.html">browser</a></li><li><a href="module-lib.configurable.html">configurable</a></li><li><a href="module-lib.date.html">date</a></li><li><a href="module-lib.dom.html">dom</a></li><li><a href="module-lib.event.html">event</a></li><li><a href="module-lib.fn.html">fn</a></li><li><a href="module-lib.object.html">object</a></li><li><a href="module-lib.observable.html">observable</a></li><li><a href="module-lib.page.html">page</a></li><li><a href="module-lib.string.html">string</a></li></ul><h3>Global</h3><ul><li><a href="global.html#beforeSwitch">beforeSwitch</a></li><li><a href="global.html#disable">disable</a></li><li><a href="global.html#dispose">dispose</a></li><li><a href="global.html#enable">enable</a></li><li><a href="global.html#isBusy">isBusy</a></li><li><a href="global.html#refresh">refresh</a></li><li><a href="global.html#setOpacity">setOpacity</a></li><li><a href="global.html#switchTo">switchTo</a></li><li><a href="global.html#tick">tick</a></li><li><a href="global.html#timeHandler">timeHandler</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-Calendar.html">Calendar</a></li><li><a href="module-CalendarExtension.html">CalendarExtension</a></li><li><a href="module-City.html">City</a></li><li><a href="module-Control.html">Control</a></li><li><a href="module-Cookie.html">Cookie</a></li><li><a href="module-Dialog.html">Dialog</a></li><li><a href="module-DialogFactory.html">DialogFactory</a></li><li><a href="module-Filter.html">Filter</a></li><li><a href="module-FloatTip.html">FloatTip</a></li><li><a href="module-Lazy.html">Lazy</a></li><li><a href="module-LazyImg.html">LazyImg</a></li><li><a href="module-lib.html">lib</a></li><li><a href="module-log.html">log</a></li><li><a href="module-Lunar.html">Lunar</a></li><li><a href="module-Pager.html">Pager</a></li><li><a href="module-PicUploader.html">PicUploader</a></li><li><a href="module-Popup.html">Popup</a></li><li><a href="module-Rating.html">Rating</a></li><li><a href="module-ScrollBar.html">ScrollBar</a></li><li><a href="module-Select.html">Select</a></li><li><a href="module-Slider.html">Slider</a></li><li><a href="SliderAnim.html">SliderAnim</a></li><li><a href="module-Tabs.html">Tabs</a></li><li><a href="module-Tip.html">Tip</a></li><li><a href="TimeLine.html">TimeLine</a></li></ul><h3>Classes</h3><ul><li><a href="initialize.html">initialize</a></li><li><a href="module-Dialog-Mask.html">Mask</a></li></ul><h3>Events</h3><ul><li><a href="CalendarExtension-Menu.html#event:beforeShow">beforeShow</a></li><li><a href="CalendarExtension-Menu.html#event:click">click</a></li><li><a href="CalendarExtension-Menu.html#event:pick">pick</a></li><li><a href="module-Calendar.html#event:beforeShow">beforeShow</a></li><li><a href="module-Calendar.html#event:hide">hide</a></li><li><a href="module-Calendar.html#event:pick">pick</a></li><li><a href="module-Calendar.html#event:show">show</a></li><li><a href="module-City.html#event:beforeShow">beforeShow</a></li><li><a href="module-City.html#event:click">click</a></li><li><a href="module-City.html#event:hide">hide</a></li><li><a href="module-City.html#event:pick">pick</a></li><li><a href="module-City.html#event:show">show</a></li><li><a href="module-Control.html#event:disable">disable</a></li><li><a href="module-Control.html#event:dispose">dispose</a></li><li><a href="module-Control.html#event:enable">enable</a></li><li><a href="module-Dialog.html#event:beforedispose">beforedispose</a></li><li><a href="module-Dialog.html#event:beforehide">beforehide</a></li><li><a href="module-Dialog.html#event:beforeshow">beforeshow</a></li><li><a href="module-Dialog.html#event:cancel">cancel</a></li><li><a href="module-Dialog.html#event:confirm">confirm</a></li><li><a href="module-Dialog.html#event:dispose">dispose</a></li><li><a href="module-Dialog.html#event:hide">hide</a></li><li><a href="module-Dialog.html#event:show">show</a></li><li><a href="module-Filter.html#event:change">change</a></li><li><a href="module-Filter.html#event:click">click</a></li><li><a href="module-log.html#event:click">click</a></li><li><a href="module-log.html#event:send">send</a></li><li><a href="module-log.html#event:start">start</a></li><li><a href="module-Lunar.html#event:click">click</a></li><li><a href="module-Lunar.html#event:navigate">navigate</a></li><li><a href="module-Lunar.html#event:pick">pick</a></li><li><a href="module-Pager.html#event:change">change</a></li><li><a href="module-Pager.html#event:click">click</a></li><li><a href="module-PicUploader.html#event:error">error</a></li><li><a href="global.html#event:module:PicUploader:remove">module:PicUploader:remove</a></li><li><a href="module-Popup.html#event:beforeShow">beforeShow</a></li><li><a href="module-Popup.html#event:click">click</a></li><li><a href="module-Popup.html#event:hide">hide</a></li><li><a href="module-Popup.html#event:show">show</a></li><li><a href="module-Rating.html#event:rated">rated</a></li><li><a href="module-ScrollBar.html#event:change">change</a></li><li><a href="module-Select.html#event:beforeShow">beforeShow</a></li><li><a href="module-Select.html#event:change">change</a></li><li><a href="module-Select.html#event:hide">hide</a></li><li><a href="module-Select.html#event:pick">pick</a></li><li><a href="module-Select.html#event:show">show</a></li><li><a href="module-Slider.html#event:change">change</a></li><li><a href="module-Tabs.html#event:change">change</a></li><li><a href="module-Tip.html#event:beforeShow">beforeShow</a></li><li><a href="module-Tip.html#event:click">click</a></li><li><a href="module-Tip.html#event:hide">hide</a></li><li><a href="module-Tip.html#event:show">show</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-lib.array.html">array</a></li><li><a href="module-lib.browser.html">browser</a></li><li><a href="module-lib.configurable.html">configurable</a></li><li><a href="module-lib.date.html">date</a></li><li><a href="module-lib.dom.html">dom</a></li><li><a href="module-lib.event.html">event</a></li><li><a href="module-lib.fn.html">fn</a></li><li><a href="module-lib.object.html">object</a></li><li><a href="module-lib.observable.html">observable</a></li><li><a href="module-lib.page.html">page</a></li><li><a href="module-lib.string.html">string</a></li></ul><h3>Global</h3><ul><li><a href="global.html#beforeSwitch">beforeSwitch</a></li><li><a href="global.html#disable">disable</a></li><li><a href="global.html#dispose">dispose</a></li><li><a href="global.html#enable">enable</a></li><li><a href="global.html#isBusy">isBusy</a></li><li><a href="global.html#refresh">refresh</a></li><li><a href="global.html#setOpacity">setOpacity</a></li><li><a href="global.html#switchTo">switchTo</a></li><li><a href="global.html#tick">tick</a></li><li><a href="global.html#timeHandler">timeHandler</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Dec 30 2013 22:11:41 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Jan 21 2014 19:33:07 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
 </body>
 </html>
