@@ -212,7 +212,7 @@ define(function () {
         function (source, item, from) {
             var length = this.length >>> 0;
             var i = (from < 0) ? Math.max(0, length + from) : from || 0;
-            for (; i < length; i++){
+            for (; i < length; i++) {
                 if (source[i] === item) {
                     return i;
                 }
@@ -355,7 +355,7 @@ define(function () {
                 extend(target[key], value);
             }
             else {
-                 target[key] = value;
+                target[key] = value;
             }
         });
         return target;
@@ -427,7 +427,7 @@ define(function () {
             '\\': '\\\\'
         };
 
-        var escape = function(chr){
+        var escape = function (chr) {
             return special[chr]
                 || '\\u' + ('0000' + chr.charCodeAt(0).toString(16)).slice(-4);
         };
@@ -437,7 +437,7 @@ define(function () {
                 obj = obj.toJSON();
             }
 
-            switch (typeOf(obj)){
+            switch (typeOf(obj)) {
                 case 'string':
                     return '"' + obj.replace(/[\x00-\x1f\\"]/g, escape) + '"';
                 case 'array':
@@ -451,8 +451,11 @@ define(function () {
                         }
                     });
                     return '{' + string + '}';
-                case 'number': case 'boolean': return '' + obj;
-                case 'null': return 'null';
+                case 'number':
+                case 'boolean':
+                    return '' + obj;
+                case 'null':
+                    return 'null';
             }
 
             return null;
@@ -500,7 +503,7 @@ define(function () {
      *             
      * @return {string} 解析结果字符串，其中值将被URI编码
      */
-    var toQueryString = function (object, base){
+    var toQueryString = function (object, base) {
         var queryString = [];
 
         forIn(object, function (value, key) {
@@ -508,7 +511,7 @@ define(function () {
                 key = base + '[' + key + ']';
             }
             var result;
-            switch (typeOf(value)){
+            switch (typeOf(value)) {
                 case 'object':
                     result = toQueryString(value, key);
                     break;
@@ -519,7 +522,7 @@ define(function () {
                         qs[i] = value[i];
                     }
                     result = toQueryString(qs, key);
-                break;
+                    break;
                 default: 
                     result = key + '=' + encodeURIComponent(value);
                     break;
@@ -693,13 +696,13 @@ define(function () {
         Function.bind,
         function (fn, scope) {
             var args = arguments.length > 2 ? slice(arguments, 2) : null,
-                F = function(){};
+                F = function () {};
 
-            var bound = function(){
+            var bound = function () {
                 var context = scope, length = arguments.length;
 
                 // 处理构造函数的 bind
-                if (this instanceof bound){
+                if (this instanceof bound) {
                     F.prototype = fn.prototype;
                     context = new F();
                 }
@@ -819,7 +822,7 @@ define(function () {
 
         /**
          * 扩展生成子类
-         * 
+             * 
          * @inner
          * @param {Class} superClass 父类
          * @param {Object} params 扩展方法集合
@@ -827,11 +830,10 @@ define(function () {
          * @return {Class} 新的子类
          */
         function extend(superClass, params) {
-            var subClass = lib.newClass();
             var F = function () {};
             F.prototype = superClass.prototype;
 
-            subClass.prototype = new F();
+            var subClass = lib.newClass(new F());
             subClass.prototype.parent = curry(parent, superClass);
 
             subClass.implement(params);
@@ -870,11 +872,20 @@ define(function () {
                 params = params.prototype;
             }
 
-            for (var key in params) {
-                if (hasOwnProperty.call(params, key)) {
-                    newClass.prototype[key] = params[key];
+            var prototype = newClass.prototype;
+            forIn(params, function (value, key) {
+                if (lib.isObject(prototype[key])
+                    && lib.isObject(value)
+                ) {
+                    prototype[key] = lib.extend(
+                        lib.clone(prototype[key]),
+                        value
+                    );
                 }
-            }
+                else {
+                    prototype[key] = value;
+                }
+            });
 
             return newClass;
         }
@@ -1262,7 +1273,7 @@ define(function () {
         }
     );
 
-    if (!('onmouseenter' in document)){
+    if (!('onmouseenter' in document)) {
 
         var check = function (event) {
             var related = event.relatedTarget;
@@ -1858,8 +1869,8 @@ define(function () {
     var walk = function (element, walk, start, match, all) {
         var el = lib.g(element)[start || walk];
         var elements = [];
-        while (el){
-            if (el.nodeType === 1 && (!match || match(el))){
+        while (el) {
+            if (el.nodeType === 1 && (!match || match(el))) {
                 if (!all) {
                     return el;
                 }
@@ -1879,6 +1890,7 @@ define(function () {
              * 获取目标元素的上一个兄弟元素节点
              * 
              * @param {(HTMLElement | string)} element 目标元素或目标元素的 id
+             * @param {?Function} match 对元素匹配的回调函数
              * 
              * @return {?HTMLElement} 目标元素的上一个兄弟元素节点，查找不到时返回 null
              */
@@ -1892,6 +1904,7 @@ define(function () {
              * 
              * @method module:lib.dom.next
              * @param {(HTMLElement | string)} element 目标元素或目标元素的 id
+             * @param {?Function} match 对元素匹配的回调函数
              * 
              * @return {?HTMLElement} 目标元素的下一个兄弟元素节点，查找不到时返回 null
              */
@@ -1905,6 +1918,7 @@ define(function () {
              * @method module:lib.dom.first
              * @grammar lib.dom.first(element)
              * @param {(HTMLElement | string)} element 目标元素或目标元素的 id
+             * @param {?Function} match 对元素匹配的回调函数
              * @meta standard
              * 
              * @return {?HTMLElement} 目标元素的第一个元素节点，查找不到时返回 null
@@ -1918,6 +1932,7 @@ define(function () {
              * 
              * @method module:lib.dom.last
              * @param {(HTMLElement | string)} element 目标元素或目标元素的 id
+             * @param {?Function} match 对元素匹配的回调函数
              * 
              * @return {?HTMLElement} 目标元素的最后一个元素节点，查找不到时返回 null
              */
@@ -1931,6 +1946,7 @@ define(function () {
              * 
              * @method module:lib.dom.children
              * @param {(HTMLElement | string)} element 目标元素或目标元素的 id
+             * @param {?Function} match 对元素匹配的回调函数
              * 
              * @return {?Array} 目标元素的所有子节点，查找不到时返回 null
              */

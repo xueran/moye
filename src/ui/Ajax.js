@@ -2,28 +2,28 @@ define(function (require) {
 
     var lib = require('./lib');
 
-    var XHR = (function(){
+    var XHR = (function () {
 
         var xhrs = [
-            function(){
+            function () {
                 return new ActiveXObject('Microsoft.XMLHTTP');
             },
-            function(){
+            function () {
                 return new ActiveXObject('MSXML2.XMLHTTP');
             },
-            function(){
+            function () {
                 return new XMLHttpRequest();
             }
         ];
 
-            var xhr;
-            while ((xhr = xhrs.pop())) {
-                try {
-                    xhr();
-                    return xhr;
-                }
-                catch(e) {}
+        var xhr;
+        while ((xhr = xhrs.pop())) {
+            try {
+                xhr();
+                return xhr;
             }
+            catch (e) {}
+        }
     })();
 
     var headers = {
@@ -56,13 +56,13 @@ define(function (require) {
 
         binds: 'onTimeout, onStateChange',
 
-        initialize: function(options){
+        initialize: function (options) {
             this.setOptions(options);
             lib.binds(this, this.binds);
             this.headers = lib.extend(this.options.headers || {}, headers);
         },
 
-        onStateChange: function(){
+        onStateChange: function () {
             var xhr = this.xhr;
             if (xhr.readyState !== 4 || !this.running) {
                 return;
@@ -74,7 +74,7 @@ define(function (require) {
                 status = xhr.status;
                 status = status === 1223 ? 204 : status;
             }
-            catch(e) {}
+            catch (e) {}
 
             xhr.onreadystatechange = noop;
             clearTimeout(this.timer);
@@ -92,11 +92,11 @@ define(function (require) {
             }
         },
 
-        onTimeout: function(){
+        onTimeout: function () {
             this.fire('timeout');
         },
 
-        send: function(options){
+        send: function (options) {
             if (this.running) {
                 return this;
             }
@@ -119,7 +119,7 @@ define(function (require) {
             lib.isObject(data) && (data = lib.toQueryString(data));
 
             var headers = this.headers;
-            if (this.options.urlEncoded && 'POST' === method){
+            if (this.options.urlEncoded && 'POST' === method) {
                 var encoding = this.options.encoding
                     ? '; charset=' + this.options.encoding
                     : '';
@@ -140,7 +140,7 @@ define(function (require) {
                     + (+new Date()).toString(36);
             }
 
-            if (data && method === 'GET'){
+            if (data && method === 'GET') {
                 url += (~url.indexOf('?') ? '&' : '?') + data;
                 data = null;
             }
@@ -152,11 +152,11 @@ define(function (require) {
 
             lib.object.each(
                 headers,
-                function(value, key){
+                function (value, key) {
                     try {
                         xhr.setRequestHeader(key, value);
                     }
-                    catch(e) {}
+                    catch (e) {}
                 }
             );
 
@@ -168,7 +168,7 @@ define(function (require) {
             return this;
         },
 
-        cancel: function(){
+        cancel: function () {
             if (this.running) {
                 this.running = false;
                 clearTimeout(this.timer);
@@ -184,7 +184,7 @@ define(function (require) {
     });
 
     var methods = {};
-    lib.each(['get', 'post'], function(method) {
+    lib.each(['get', 'post'], function (method) {
         methods[method] = function (data) {
             var object = {
                 method: method
